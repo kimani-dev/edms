@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+$body-font-family: 'Quicksand', sans-serif !important;
+html,
+body,
+.v-application {
+  font-family: $body-font-family;
+}
+.v-application {
+    .display-4,
+    .display-3,
+    .display-2,
+    .display-1,
+    .headline,
+    .title,
+    .subtitle-1,
+    .subtitle-2,
+    .body-1,
+    .body-2,
+    .caption,
+    .overline
+    {
+        font-family: $body-font-family;
+    }
+}
+
+  /* width */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: rgb(255, 219, 219);
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #3483eb;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+@import '~vuetify/src/styles/settings/_variables.scss';
