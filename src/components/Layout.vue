@@ -2,7 +2,7 @@
   <div>
     <v-card flat color="transparent">
       <v-card-title>
-        <p class="text-capitalize">personal documents</p>
+        <p class="text-capitalize">{{ title }}</p>
       </v-card-title>
       <v-divider inset></v-divider>
       <v-card-text>
@@ -131,6 +131,12 @@
 <script>
 export default {
   name: "LayoutView",
+  props: {
+    title: {
+      type: String,
+      default: "Documents",
+    },
+  },
   data: () => ({
     selectedDocuments: [],
     files: [

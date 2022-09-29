@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Layout :title="'My Documents'" />
+    <Layout :title="'My Department Documents'" />
   </div>
 </template>
 
@@ -8,8 +8,10 @@
 import Layout from "../Layout.vue";
 
 export default {
-  name: "PersonalDocuments",
-  components: { Layout },
+  name: "DepartmentDocuments",
+  components: {
+    Layout,
+  },
 };
 </script>
 

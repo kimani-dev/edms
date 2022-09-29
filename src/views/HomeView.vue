@@ -93,7 +93,7 @@
           <v-card>
             <v-card-title class="text-capitalize">
               my documents <v-spacer></v-spacer>
-              <v-btn color="primary" small>
+              <v-btn color="primary" small outlined>
                 <v-icon left>mdi-file-import</v-icon> view all</v-btn
               >
             </v-card-title>
