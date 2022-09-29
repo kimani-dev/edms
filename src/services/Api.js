@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const apiClient = new axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: "https://eparliamentapi.suvence.com/",
   credentials: true,
   headers: {
     Accept: "application/json",
@@ -11,7 +11,7 @@ const apiClient = new axios.create({
 });
 
 const fileClient = new axios.create({
-  baseURL: "http://127.0.0.1:8000/api/",
+  baseURL: "https://eparliamentapi.suvence.com/",
   credentials: true,
   headers: {
     "Content-Type": "multipart/form-data",
