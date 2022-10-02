@@ -129,7 +129,7 @@
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
-              <pdf-viewer :pdf="'/David_Kimani.pdf'" />
+              <pdf-viewer :pdf="'/Announcement.pdf'" />
             </v-card-text>
           </v-card>
         </v-col>

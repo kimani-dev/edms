@@ -158,7 +158,7 @@
 
 <script>
 import { userStore } from "../stores/user";
-import { mapActions, mapState } from "pinia";
+import { mapActions, mapWritableState } from "pinia";
 
 export default {
   name: "LoginView",
@@ -189,26 +189,41 @@ export default {
     };
   },
   computed: {
-    ...mapState(userStore, ["user"]),
+    ...mapWritableState(userStore, ["user", "isLoggedIn"]),
   },
   methods: {
     ...mapActions(userStore, ["login"]),
     loginUser() {
       this.loginLoader = true;
-      this.login({
-        username: this.username,
-        password: this.password,
-      })
-        .then(() => {
-          this.showSnackbar(true, "Login success");
-          this.$router.replace({ name: "Dashboard" });
-        })
-        .catch((error) => {
-          this.showSnackbar(false, error.response.data.message);
-        })
-        .finally(() => {
-          this.loginLoader = false;
-        });
+      localStorage.setItem("token", "bearer token####");
+      this.user = {
+        name: "Admin",
+        id: 1,
+        email: "admin@edms.com",
+        role: {
+          name: "Admin",
+        },
+      };
+      setTimeout(() => {
+        this.loginLoader = false;
+        this.showSnackbar(true, "Login success");
+        this.$router.replace({ name: "Dashboard" });
+        this.isLoggedIn = true;
+      }, 4000);
+      // this.login({
+      //   username: this.username,
+      //   password: this.password,
+      // })
+      //   .then(() => {
+      //     this.showSnackbar(true, "Login success");
+      //     this.$router.replace({ name: "Dashboard" });
+      //   })
+      //   .catch((error) => {
+      //     this.showSnackbar(false, error.response.data.message);
+      //   })
+      //   .finally(() => {
+      //     this.loginLoader = false;
+      //   });
     },
     sendResetLink() {
       // send link
