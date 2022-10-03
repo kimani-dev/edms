@@ -25,7 +25,7 @@
           :items="items"
           :search="search"
           no-data-text="There are no announcements to view"
-          class="elevation-10 text-capitalize primary--text"
+          class="elevation-10 text-capitalize"
         >
           <template v-slot:[`item.date`]="{ item }">
             {{ item.date | moment("dddd, Mo MMMM YYYY") }}

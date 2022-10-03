@@ -275,10 +275,34 @@ export default {
     otherDepartmentGroup: false,
     departments: [
       {
+        name: "Reception",
+      },
+      {
         name: "Speaker's Office",
       },
       {
         name: "Clerk's Office",
+      },
+      {
+        name: "Finance",
+      },
+      {
+        name: "Supply Chain",
+      },
+      {
+        name: "Research and records",
+      },
+      {
+        name: "Hansard",
+      },
+      {
+        name: "ICT",
+      },
+      {
+        name: "Clerks at Table",
+      },
+      {
+        name: "Sergeant at Arms",
       },
     ],
     chatDialog: false,

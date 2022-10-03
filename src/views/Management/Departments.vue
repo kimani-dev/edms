@@ -52,6 +52,9 @@
                   <v-icon color="primary">mdi-circle-small</v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>David Kimani</v-list-item-title>
+                <v-list-item-action>
+                  <v-btn small outlined color="primary">role</v-btn>
+                </v-list-item-action>
               </v-list-item>
             </v-list>
           </template>

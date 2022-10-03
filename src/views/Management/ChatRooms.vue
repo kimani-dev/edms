@@ -76,7 +76,7 @@
             no-data-text="No chat rooms to show"
             :headers="headers"
             :items="items"
-            class="primary--text text-capitalize elevation-10"
+            class="text-capitalize elevation-10"
           >
             <template v-slot:[`item.actions`]="{ item }">
               <v-btn
