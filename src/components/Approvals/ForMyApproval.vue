@@ -149,6 +149,10 @@
                       </template>
                       <span>Save to my documents</span>
                     </v-tooltip>
+                    <!-- comments -->
+                    <v-btn icon color="primary">
+                      <v-icon small>mdi-comment-multiple-outline</v-icon> 2
+                    </v-btn>
                   </template>
                   <!-- icon for file -->
                   <template v-slot:[`item.file`]="{ item }">

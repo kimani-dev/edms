@@ -87,13 +87,19 @@
                   </template>
                   <span>Save to my documents</span>
                 </v-tooltip>
+                <!-- comments -->
+                <v-btn icon color="primary">
+                  <v-icon small>mdi-comment-multiple-outline</v-icon> 2
+                </v-btn>
               </template>
               <!-- icon for file -->
               <template v-slot:[`item.file`]="{ item }">
-                <v-icon :color="getFileIconColor(item.file)">
-                  {{ getFileIcon(item.file) }}
-                </v-icon>
-                {{ item.file }}
+                <div @click="pdfDialog = true">
+                  <v-icon :color="getFileIconColor(item.file)">
+                    {{ getFileIcon(item.file) }}
+                  </v-icon>
+                  {{ item.file }}
+                </div>
               </template>
               <!-- date formatting -->
               <template v-slot:[`item.date`]="{ item }">
@@ -104,10 +110,15 @@
         </v-row>
       </v-card-text>
     </v-card>
+    <v-dialog v-model="pdfDialog" width="80%">
+      <pdf-viewer :pdf="'/Test.pdf'" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import PdfViewer from "../PdfViewer.vue";
+
 export default {
   name: "IncomingDocuments",
   data: () => ({
@@ -166,7 +177,11 @@ export default {
         file: "New Document.docx",
       },
     ],
+    pdfDialog: false,
   }),
+  components: {
+    PdfViewer,
+  },
   methods: {
     getFileIcon(fileName) {
       let fileExtension = [];

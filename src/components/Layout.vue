@@ -82,6 +82,7 @@
                         v-for="file in files"
                         :key="file.name"
                         class="py-1"
+                        @click="pdfDialog = true"
                       >
                         <v-list-item-icon>
                           <v-icon>mdi-circle-small</v-icon>
@@ -99,6 +100,7 @@
                           link
                           v-for="file in files"
                           :key="file.name"
+                          @click="pdfDialog = true"
                         >
                           <template v-slot:default="{ active }">
                             <v-list-item-icon>
@@ -125,10 +127,15 @@
         </v-container>
       </v-card-text>
     </v-card>
+    <v-dialog v-model="pdfDialog" width="80%">
+      <pdf-viewer :pdf="'/Test.pdf'" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import PdfViewer from "./PdfViewer.vue";
+
 export default {
   name: "LayoutView",
   props: {
@@ -136,6 +143,9 @@ export default {
       type: String,
       default: "Documents",
     },
+  },
+  components: {
+    PdfViewer,
   },
   data: () => ({
     selectedDocuments: [],
@@ -148,6 +158,7 @@ export default {
       { name: "ANOTHER DOCUMENT.csv" },
     ],
     activateSelect: false,
+    pdfDialog: false,
   }),
   methods: {
     getFileIcon(fileName) {
