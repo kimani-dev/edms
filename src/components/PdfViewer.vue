@@ -1,6 +1,6 @@
 <template>
   <v-card :loading="loading">
-    <p v-if="error">Document not found</p>
+    <p v-if="error">Error loading document</p>
     <PdfComponent
       :src="pdf"
       @loaded="(loading = false), (error = false)"

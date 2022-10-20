@@ -101,6 +101,25 @@ export default {
   deleteFile(id) {
     return apiClient.delete(`files/${id}`);
   },
+  //departments
+  getDepartments() {
+    return apiClient.get("departments");
+  },
+  createDepartment(data) {
+    return apiClient.post("departments", data);
+  },
+  editDepartment(id, data) {
+    return apiClient.put(`department/${id}`, data);
+  },
+  deleteDeparment(id) {
+    return apiClient.delete(`department/${id}`);
+  },
+  createDeparmentAdmin(id, data) {
+    return apiClient.post(`departments/${id}`, data);
+  },
+  editDeparmentAdmin(id, data) {
+    return apiClient.put(`departments/${id}`, data);
+  },
   // talks js
   createTalkUser(userId, data) {
     return chatClient.put(`v1/t1DlROik/users/${userId}`, data);

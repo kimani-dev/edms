@@ -23,7 +23,9 @@
         <v-col>
           <v-card elevation="10" class="pa-3">
             <v-card-text>
-              <p class="text-h4 primary--text">12</p>
+              <p class="text-h4 primary--text">
+                {{ incomingDocumentsCount }}
+              </p>
               <div class="d-flex">
                 <v-icon left color="primary">mdi-file-undo</v-icon>
                 <p class="my-auto text-uppercase font-weight-medium">
@@ -36,7 +38,9 @@
         <v-col>
           <v-card elevation="10" class="pa-3">
             <v-card-text>
-              <p class="text-h4 primary--text">8</p>
+              <p class="text-h4 primary--text">
+                {{ outboundDocumentsCount }}
+              </p>
               <div class="d-flex">
                 <v-icon left color="primary">mdi-file-export</v-icon>
                 <p class="my-auto text-uppercase font-weight-medium">
@@ -49,7 +53,9 @@
         <v-col>
           <v-card elevation="10" class="pa-3">
             <v-card-text>
-              <p class="text-h4 primary--text">9</p>
+              <p class="text-h4 primary--text">
+                {{ inForApprovalDocumentsCount }}
+              </p>
               <div class="d-flex">
                 <v-icon left color="primary">mdi-file-check</v-icon>
                 <p class="my-auto text-uppercase font-weight-medium">
@@ -70,15 +76,25 @@
             <v-divider></v-divider>
             <v-card-text>
               <v-list two-line dense>
-                <v-list-item v-for="n in 6" :key="n" class="my-n4">
+                <p class="text-capitalize" v-if="!recentActivity.length > 0">
+                  No recent activity
+                </p>
+                <v-list-item
+                  v-else
+                  v-for="n in recentActivity"
+                  :key="n.id"
+                  class="my-n4"
+                >
                   <v-list-item-icon>
                     <v-icon>mdi-circle-small</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title>A nice file.pdf</v-list-item-title>
-                    <v-list-item-subtitle
-                      >{{ n + 1 }} hours ago</v-list-item-subtitle
-                    >
+                    <v-list-item-title>
+                      {{ n.name }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ n.time }}
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-icon color="primary">mdi-file-replace</v-icon>
@@ -93,22 +109,37 @@
           <v-card>
             <v-card-title class="text-capitalize">
               my documents <v-spacer></v-spacer>
-              <v-btn color="primary" small outlined>
+              <v-btn
+                color="primary"
+                small
+                outlined
+                :to="{ name: 'PersonalDocuments' }"
+              >
                 <v-icon left>mdi-file-import</v-icon> view all</v-btn
               >
             </v-card-title>
             <v-divider></v-divider>
             <v-card-text>
               <v-list two-line dense>
-                <v-list-item v-for="n in 6" :key="n" class="my-n4">
+                <p class="text-capitalize" v-if="!myDocuments.length > 0">
+                  You have not uploaded any documents
+                </p>
+                <v-list-item
+                  v-else
+                  v-for="n in myDocuments"
+                  :key="n.id"
+                  class="my-n4"
+                >
                   <v-list-item-icon>
                     <v-icon>mdi-circle-small</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title
-                      >Another nice file.xlsx</v-list-item-title
-                    >
-                    <v-list-item-subtitle>{{ n + 1 }} KB</v-list-item-subtitle>
+                    <v-list-item-title>
+                      {{ n.name }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ n.size }}
+                    </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
                     <v-icon color="primary">mdi-file-replace</v-icon>
@@ -140,12 +171,40 @@
 
 <script>
 import PdfViewer from "@/components/PdfViewer.vue";
+import { mapState, mapActions } from "pinia";
+import { myDocuments } from "../stores/myDocuments";
+import Api from "@/services/Api";
 
 export default {
   components: { PdfViewer },
   name: "HomeView",
   data: () => ({
     search: "",
+    announcement: null,
   }),
+  computed: {
+    ...mapState(myDocuments, [
+      "myDocuments",
+      "incomingDocumentsCount",
+      "outboundDocumentsCount",
+      "inForApprovalDocumentsCount",
+      "recentActivity",
+    ]),
+  },
+  methods: {
+    ...mapActions(myDocuments, ["getAllDocuments"]),
+  },
+  created() {
+    // get all documents
+    this.getAllDocuments();
+    // get announcements
+    Api.getSpecificFileType("announcements")
+      .then((res) => {
+        this.announcement = res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
 };
 </script>
