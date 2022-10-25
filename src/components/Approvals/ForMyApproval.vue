@@ -33,7 +33,7 @@
                         <v-icon color="error">mdi-circle-small</v-icon>
                       </v-list-item-icon>
                       <v-list-item-title class="error--text"
-                        >Denied</v-list-item-title
+                        >Rejected</v-list-item-title
                       >
                     </v-list-item>
                   </v-list-item-group>
@@ -46,6 +46,7 @@
                     Filter my approvals by date
                   </p>
                   <v-spacer></v-spacer>
+                  <!-- selection activato -->
                   <v-btn
                     icon
                     color="primary"
@@ -53,17 +54,21 @@
                   >
                     <v-icon>mdi-select-multiple</v-icon>
                   </v-btn>
+                  <!-- approve -->
                   <v-btn
                     icon
                     color="primary"
                     :disabled="selectedItems.length == 0 || selectCategory == 1"
+                    @click="approveDialog = true"
                   >
                     <v-icon>mdi-check-underline-circle-outline</v-icon>
                   </v-btn>
+                  <!-- reject -->
                   <v-btn
                     icon
                     color="primary"
                     :disabled="selectedItems.length == 0 || selectCategory == 2"
+                    @click="rejectDialog = true"
                   >
                     <v-icon>mdi-close-circle-outline</v-icon>
                   </v-btn>
@@ -150,7 +155,7 @@
                       <span>Save to my documents</span>
                     </v-tooltip>
                     <!-- comments -->
-                    <v-btn icon color="primary">
+                    <v-btn icon color="primary" @click="commentsDialog = true">
                       <v-icon small>mdi-comment-multiple-outline</v-icon> 2
                     </v-btn>
                   </template>
@@ -172,6 +177,113 @@
         </v-card>
       </v-card-text>
     </v-card>
+    <!-- comments dialog -->
+    <v-dialog v-model="commentsDialog" width="auto">
+      <v-card width="500" shaped>
+        <v-card-title class="text-capitalize">
+          3 comments
+          <v-spacer></v-spacer>
+          <v-btn icon color="primary" @click="commentsDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-2">
+          <v-list two-line>
+            <v-list-item v-for="n in 3" :key="n" link>
+              <v-list-item-avatar>
+                <v-icon large color="primary">mdi-account-circle</v-icon>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title class="text-capitalize"
+                  >abraham lincoln</v-list-item-title
+                >
+                <v-list-item-subtitle>
+                  This is a very nice file
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon color="red darken-2">
+                  22 <v-icon>mdi-heart</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-text-field
+            dense
+            prepend-inner-icon="mdi-message"
+            append-icon="mdi-send"
+            label="Enter your comment here"
+            outlined
+          ></v-text-field>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- approve dialog -->
+    <v-dialog v-model="approveDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          approve
+          <v-spacer></v-spacer>
+          <v-btn color="primary" icon @click="approveDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-textarea
+            outlined
+            dense
+            prepend-icon="mdi-text"
+            label="Reason for approval"
+            v-model="reason"
+          ></v-textarea>
+          <v-btn
+            color="primary"
+            block
+            outlined
+            :loading="approveLoader"
+            :disabled="reason == ''"
+            @click="approve"
+            >approve</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- reject dialog -->
+    <v-dialog v-model="rejectDialog" width="auto">
+      <v-card width="500">
+        <v-card-title>
+          reject
+          <v-spacer></v-spacer>
+          <v-btn color="primary" icon @click="rejectDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-textarea
+            outlined
+            dense
+            prepend-icon="mdi-text"
+            label="Reason for rejection"
+            v-model="reason"
+          ></v-textarea>
+          <v-btn
+            color="primary"
+            block
+            outlined
+            :loading="rejectLoader"
+            :disabled="reason == ''"
+            @click="reject"
+            >reject</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -232,6 +344,12 @@ export default {
     selectMultiple: false,
     selectedItems: [],
     selectCategory: "",
+    commentsDialog: false,
+    approveDialog: false,
+    reason: "",
+    approveLoader: false,
+    rejectDialog: false,
+    rejectLoader: false,
   }),
   methods: {
     getFileIcon(fileName) {
@@ -282,6 +400,8 @@ export default {
           return "primary";
       }
     },
+    approve() {},
+    reject() {},
   },
 };
 </script>

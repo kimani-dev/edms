@@ -15,8 +15,10 @@
             label="File Name"
             dense
             prepend-icon="mdi-text-search"
+            :loading="searchLoader"
             v-model="name"
             clearable
+            @change="searchDocuments"
           />
           <v-spacer></v-spacer>
           <!-- file date -->
@@ -33,12 +35,14 @@
                 v-model="date"
                 label="Date Created"
                 prepend-icon="mdi-calendar"
+                :loading="searchLoader"
                 dense
                 outlined
                 readonly
                 v-bind="attrs"
                 v-on="on"
                 clearable
+                @change="searchDocuments"
               ></v-text-field>
             </template>
             <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
@@ -49,7 +53,10 @@
             outlined
             dense
             label="Department"
+            :loading="searchLoader"
             prepend-icon="mdi-account-multiple"
+            v-model="department"
+            @change="searchDocuments"
           />
         </div>
         <v-data-table
@@ -88,10 +95,13 @@
         </v-data-table>
       </v-card-text>
     </v-card>
+    <!-- snack bar -->
   </div>
 </template>
 
 <script>
+import Api from "@/services/Api";
+
 export default {
   name: "IndexView",
   data: () => ({
@@ -100,6 +110,7 @@ export default {
       .toISOString()
       .substr(0, 10),
     menu: false,
+    department: "",
     headers: [
       {
         text: "file name",
@@ -142,6 +153,13 @@ export default {
         file: "New Document.docx",
       },
     ],
+    searchLoader: false,
+    // snack bar
+    snackBar: false,
+    snackBarData: {
+      success: false,
+      message: "",
+    },
   }),
   methods: {
     getFileIcon(fileName) {
@@ -191,6 +209,28 @@ export default {
         default:
           return "primary";
       }
+    },
+    searchDocuments() {
+      this.searchLoader = true;
+      Api.searchDocuments({
+        name: this.name,
+        date: this.date,
+        department: this.department,
+      })
+        .then((res) => {
+          this.items = res.data.data;
+        })
+        .catch((err) => {
+          this.showSnackBar(false, err.response.data.message);
+        })
+        .finally(() => {
+          this.searchLoader = false;
+        });
+    },
+    showSnackBar(success, message) {
+      this.snackBar = true;
+      this.snackBbarData.success = success;
+      this.snackBbarData.message = message;
     },
   },
 };

@@ -23,22 +23,9 @@
                 small
                 text
                 v-if="fileEdits"
+                @click="newFolderDialog = true"
               >
                 <v-icon>mdi-folder-plus</v-icon> new folder
-              </v-btn>
-              <!-- upload file -->
-              <v-btn
-                color="primary"
-                class="my-auto mr-2"
-                small
-                text
-                v-if="fileEdits"
-              >
-                <v-icon>mdi-file-upload</v-icon> upload file
-              </v-btn>
-              <!-- download file -->
-              <v-btn color="primary" class="my-auto" small text>
-                <v-icon>mdi-file-download</v-icon> download
               </v-btn>
             </div>
           </v-row>
@@ -70,11 +57,35 @@
                   </v-col>
                   <v-divider vertical></v-divider>
                   <v-col>
+                    <!-- FILE ACTIONS -->
                     <div class="d-flex pb-2">
                       <p class="primary--text my-auto text-capitalize">
                         {{ allFolders[folderGroup] }}
                       </p>
+                      <v-divider vertical class="ml-2"></v-divider>
+                      <!-- upload file -->
+                      <v-btn
+                        class="my-auto ml-2"
+                        small
+                        text
+                        v-if="fileEdits"
+                        @click="uploadDialog = true"
+                      >
+                        <v-icon left>mdi-cloud-upload-outline</v-icon> upload
+                      </v-btn>
+                      <!-- create subfolder -->
+                      <v-btn
+                        class="my-auto ml-2"
+                        small
+                        text
+                        v-if="fileEdits && !activateSelect"
+                        @click="createSubfolderDialog = true"
+                      >
+                        <v-icon left>mdi-folder-plus-outline</v-icon> new
+                        subfolder
+                      </v-btn>
                       <v-spacer></v-spacer>
+                      <!-- cancel selection -->
                       <v-btn
                         small
                         text
@@ -83,6 +94,7 @@
                       >
                         <v-icon left>mdi-close</v-icon> cancel
                       </v-btn>
+                      <!-- enable selection mode -->
                       <v-btn
                         small
                         text
@@ -90,17 +102,22 @@
                       >
                         <v-icon left>mdi-select-multiple</v-icon> select
                       </v-btn>
+                      <!-- share files -->
                       <v-btn
                         small
                         text
                         :disabled="!selectedDocuments.length > 0"
+                        @click="shareDialog = true"
                       >
                         <v-icon left>mdi-share</v-icon> share
                       </v-btn>
+                      <!-- delete files -->
                       <v-btn
                         small
                         text
                         :disabled="!selectedDocuments.length > 0"
+                        color="error"
+                        @click="deleteDialog = true"
                       >
                         <v-icon left>mdi-delete</v-icon> delete
                       </v-btn>
@@ -123,8 +140,9 @@
                             }}</v-icon>
                           </v-list-item-icon>
                           <v-list-item-title>
-                            {{ file.name }}</v-list-item-title
-                          >
+                            {{ file.name }}
+                          </v-list-item-title>
+                          <v-icon color="primary">mdi-cloud-download</v-icon>
                         </v-list-item>
                         <!-- check and display all subfolders with their files -->
                         <v-list-group
@@ -157,7 +175,12 @@
                               >
                             </v-list-item-icon>
                             <v-list-item-title>
-                              {{ subfolderFile.name }}</v-list-item-title
+                              {{ subfolderFile.name }}
+                            </v-list-item-title>
+                            <v-icon
+                              color="primary"
+                              @click="downloadFile(subfolderFile.id)"
+                              >mdi-cloud-download</v-icon
                             >
                           </v-list-item>
                         </v-list-group>
@@ -248,14 +271,187 @@
         </v-container>
       </v-card-text>
     </v-card>
+    <!-- pdf dialog -->
     <v-dialog v-model="pdfDialog" width="80%">
       <pdf-viewer :pdf="'/Test.pdf'" />
     </v-dialog>
+    <!-- new folder dialog -->
+    <v-dialog v-model="newFolderDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          new folder
+          <v-spacer></v-spacer>
+          <v-btn icon @click="newFolderDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-text-field
+            outlined
+            dense
+            label="Folder Name"
+            prepend-icon="mdi-folder"
+            v-model="folderName"
+          ></v-text-field>
+          <v-btn
+            block
+            color="primary"
+            outlined
+            :disabled="folderName == ''"
+            :loading="createFolderLoader"
+            @click="createFolder"
+            >create folder</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- upload file dialog -->
+    <v-dialog v-model="uploadDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          upload file
+          <v-spacer></v-spacer>
+          <v-btn icon @click="uploadDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-file-input
+            outlined
+            dense
+            label="Select file"
+            v-model="file"
+          ></v-file-input>
+          <v-text-field
+            label="File Name"
+            v-model="fileName"
+            outlined
+            dense
+            prepend-icon="mdi-text"
+          ></v-text-field>
+          <v-btn
+            block
+            color="primary"
+            outlined
+            :loading="uploadLoader"
+            :disabled="file == null || fileName == ''"
+            @click="uploadFile"
+            >upload</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- create subfolder dialod -->
+    <v-dialog v-model="createSubfolderDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          create Subfolder
+          <v-spacer></v-spacer>
+          <v-btn icon @click="createSubfolderDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-text-field
+            outlined
+            dense
+            prepend-icon="mdi-folder-outline"
+            label="Subfolder name"
+            v-model="subfolderName"
+          ></v-text-field>
+          <v-btn
+            block
+            color="primary"
+            outlined
+            :disabled="subfolderName == ''"
+            :loading="createSubfolderLoader"
+            @click="createSubfolder"
+            >create</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- share dialog -->
+    <v-dialog v-model="shareDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          share files
+          <v-spacer></v-spacer>
+          <v-btn icon @click="shareDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-autocomplete
+            outlined
+            dense
+            prepend-icon="mdi-account-multiple"
+            label="Select Members"
+            multiple
+            chips
+            deletable-chips
+            v-model="shareMembers"
+            :items="memberNames"
+          ></v-autocomplete>
+          <v-btn
+            block
+            color="primary"
+            outlined
+            :disabled="!shareMembers.length > 0"
+            :loading="shareLoader"
+            >share</v-btn
+          >
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- delete selected files dialog -->
+    <v-dialog v-model="deleteDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          delete files
+          <v-spacer></v-spacer>
+          <v-btn icon @click="deleteDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <p class="black--text text-capitalize">
+            Are you sure you want to delete the selected files?
+          </p>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" :disabled="deleteLoader">cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="error" :loading="deleteLoader" @click="deleteFiles"
+            >delete</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- snack bar -->
+    <v-snackbar v-model="snackBar" color="primary" outlined>
+      <div class="d-flex justify-center">
+        <v-icon v-if="snackBarData.success" color="success" left
+          >mdi-check</v-icon
+        >
+        <v-icon v-else color="error" left>mdi-cancel</v-icon>
+        <p class="my-auto">
+          {{ snackBarData.message }}
+        </p>
+      </div>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import PdfViewer from "./PdfViewer.vue";
+import { mapActions, mapState } from "pinia";
+import { memberStore } from "../stores/members";
 
 export default {
   name: "LayoutView",
@@ -286,8 +482,32 @@ export default {
     activateSelect: false,
     pdfDialog: false,
     folderGroup: null,
+    // snackBar
+    snackBar: false,
+    snackBarData: {
+      success: false,
+      message: "",
+    },
+    // dialogs
+    newFolderDialog: false,
+    createSubfolderDialog: false,
+    uploadDialog: false,
+    shareDialog: false,
+    deleteDialog: false,
+    //dialog accessories
+    createFolderLoader: false,
+    uploadLoader: false,
+    createSubfolderLoader: false,
+    shareLoader: false,
+    deleteLoader: false,
+    folderName: "",
+    subfolderName: "",
+    file: null,
+    fileName: "",
+    shareMembers: [],
   }),
   computed: {
+    ...mapState(memberStore, ["memberNames", "members"]),
     links() {
       return [
         {
@@ -304,6 +524,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(memberStore, ["getMembers"]),
     getFileIcon(fileName) {
       let fileExtension = [];
       let start = false;
@@ -380,6 +601,58 @@ export default {
           file.subfolder === subfolderName
       );
     },
+    // create folder
+    createFolder() {
+      this.createFolderLoader = true;
+      // check if folder exists
+      if (!this.allFolders.some((folder) => folder == this.folderName)) {
+        this.allFolders.push(this.folderName);
+        this.folderName = "";
+        this.newFolderDialog = false;
+      } else {
+        this.showSnackBar(false, "Folder already exists");
+      }
+      this.createFolderLoader = false;
+    },
+    // upload file
+    uploadFile() {
+      this.uploadLoader = false;
+      this.$emit("uploadFile", {
+        name: this.fileName,
+        file: this.file,
+        folder: this.allFolders[this.folderGroup],
+      });
+    },
+    // create subfolder
+    createSubfolder() {
+      this.createSubfolderLoader = true;
+      if (
+        !this.activeFiles.some(
+          (subfolder) => !subfolder.file && subfolder.name == this.subfolderName
+        )
+      ) {
+        this.activeFiles.push({ name: this.subfolderName, size: "0b" });
+        this.createSubfolderDialog = false;
+        this.createFolderLoader = false;
+      } else {
+        this.createSubfolderLoader = false;
+        this.showSnackBar(false, "Subfolder already exists in this folder");
+      }
+    },
+    // download file
+    downloadFile(id) {
+      console.log(id);
+    },
+    // share selected files
+    shareFiles() {},
+    // delete selected files
+    deleteFiles() {},
+    // snack bar
+    showSnackBar(success, message) {
+      this.snackBar = true;
+      this.snackBarData.success = success;
+      this.snackBarData.message = message;
+    },
   },
   watch: {
     selectedDocuments(newValue, oldValue) {
@@ -407,9 +680,14 @@ export default {
         this.activeFiles.push({ name: subfolder, size: "2kb" });
       }
     },
+    //watch selection && clear selection when it's deactivated
+    activateSelect(newValue) {
+      if (!newValue) this.selectedDocuments = [];
+    },
   },
   beforeMount() {
     this.sortFiles();
+    // this.getMembers();
   },
 };
 </script>

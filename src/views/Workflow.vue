@@ -76,6 +76,8 @@
 </template>
 
 <script>
+// import Api from "@/services/Api";
+
 export default {
   name: "WorkFlow",
   data: () => ({
@@ -100,6 +102,9 @@ export default {
       },
     ],
   }),
+  created() {
+    // Api.getWorkFlow();
+  },
 };
 </script>
 

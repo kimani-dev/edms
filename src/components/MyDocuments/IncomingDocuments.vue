@@ -72,7 +72,13 @@
                 <!-- download -->
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                    <v-btn
+                      color="primary"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="downloadFile(item)"
+                    >
                       <v-icon>mdi-cloud-download</v-icon>
                     </v-btn>
                   </template>
@@ -81,14 +87,20 @@
                 <!-- save -->
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-btn color="primary" icon v-bind="attrs" v-on="on">
+                    <v-btn
+                      color="primary"
+                      icon
+                      v-bind="attrs"
+                      v-on="on"
+                      @click="saveToMyDocuments(item)"
+                    >
                       <v-icon>mdi-file-download</v-icon>
                     </v-btn>
                   </template>
                   <span>Save to my documents</span>
                 </v-tooltip>
                 <!-- comments -->
-                <v-btn icon color="primary">
+                <v-btn icon color="primary" @click="commentsDialog = true">
                   <v-icon small>mdi-comment-multiple-outline</v-icon> 2
                 </v-btn>
               </template>
@@ -110,14 +122,62 @@
         </v-row>
       </v-card-text>
     </v-card>
+    <!-- pdf dialog -->
     <v-dialog v-model="pdfDialog" width="80%">
       <pdf-viewer :pdf="'/Test.pdf'" />
+    </v-dialog>
+    <!-- comments dialog -->
+    <v-dialog v-model="commentsDialog" width="auto">
+      <v-card width="500" shaped>
+        <v-card-title class="text-capitalize">
+          3 comments
+          <v-spacer></v-spacer>
+          <v-btn icon @click="commentsDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-2">
+          <v-list two-line>
+            <v-list-item v-for="n in 3" :key="n" link>
+              <v-list-item-avatar>
+                <v-icon large color="primary">mdi-account-circle</v-icon>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title class="text-capitalize"
+                  >abraham lincoln</v-list-item-title
+                >
+                <v-list-item-subtitle>
+                  This is a very nice file
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon color="red darken-2">
+                  22 <v-icon>mdi-heart</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-text-field
+            dense
+            prepend-inner-icon="mdi-message"
+            append-icon="mdi-send"
+            label="Enter your comment here"
+            outlined
+          ></v-text-field>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
 import PdfViewer from "../PdfViewer.vue";
+import { mapState, mapActions } from "pinia";
+import { myDocuments } from "@/stores/myDocuments";
 
 export default {
   name: "IncomingDocuments",
@@ -178,11 +238,16 @@ export default {
       },
     ],
     pdfDialog: false,
+    commentsDialog: false,
   }),
   components: {
     PdfViewer,
   },
+  computed: {
+    ...mapState(myDocuments, ["incomingDocuments"]),
+  },
   methods: {
+    ...mapActions(myDocuments, ["getIncomingDocuments"]),
     getFileIcon(fileName) {
       let fileExtension = [];
       let start = false;
@@ -231,6 +296,20 @@ export default {
           return "primary";
       }
     },
+    // download selected file
+    downloadFile(file) {
+      console.log(file);
+    },
+    // save selected file to my documents
+    saveToMyDocuments(file) {
+      console.log(file);
+    },
+    addReply() {},
+  },
+  created() {
+    // this.getIncomingDocuments().then((res)=>{
+    //   this.items = res;
+    // });
   },
 };
 </script>

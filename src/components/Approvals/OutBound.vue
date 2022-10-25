@@ -8,7 +8,12 @@
           <v-card-text>
             <v-row>
               <v-col cols="3">
-                <v-btn color="primary" outlined block>
+                <v-btn
+                  color="primary"
+                  outlined
+                  block
+                  @click="newApprovalDialog = true"
+                >
                   <v-icon left>mdi-file-plus</v-icon> new approval</v-btn
                 >
                 <v-divider class="mt-2"></v-divider>
@@ -116,7 +121,7 @@
                       <span>Download</span>
                     </v-tooltip>
                     <!-- comments -->
-                    <v-btn icon color="primary">
+                    <v-btn icon color="primary" @click="commentsDialog = true">
                       <v-icon small>mdi-comment-multiple-outline</v-icon> 2
                     </v-btn>
                   </template>
@@ -138,10 +143,109 @@
         </v-card>
       </v-card-text>
     </v-card>
+    <!-- new approval dialog -->
+    <v-dialog v-model="newApprovalDialog" width="auto">
+      <v-card width="500">
+        <v-card-title class="text-uppercase">
+          new approval
+          <v-spacer></v-spacer>
+          <v-btn color="primary" icon @click="newApprovalDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="mt-2">
+          <v-form v-model="form">
+            <v-autocomplete
+              label="Select recipient type"
+              :items="['Department', 'Member']"
+              outlined
+              dense
+              prepend-icon="mdi-account-group"
+              :rules="[rules.required]"
+              v-model="receipientType"
+            ></v-autocomplete>
+            <v-autocomplete
+              label="Recipient"
+              outlined
+              dense
+              prepend-icon="mdi-account"
+              :rules="[rules.required]"
+              v-model="recipient"
+            ></v-autocomplete>
+            <v-autocomplete
+              label="Document"
+              outlined
+              dense
+              prepend-icon="mdi-file-document"
+              :rules="[rules.required]"
+              v-model="file"
+            ></v-autocomplete>
+            <v-btn
+              color="primary"
+              outlined
+              block
+              :loading="sendLoader"
+              :disabled="!form"
+              @click="sendApproval"
+              >send</v-btn
+            >
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <!-- comments dialog -->
+    <v-dialog v-model="commentsDialog" width="auto">
+      <v-card width="500" shaped>
+        <v-card-title class="text-capitalize">
+          3 comments
+          <v-spacer></v-spacer>
+          <v-btn icon color="primary" @click="commentsDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text class="pa-2">
+          <v-list two-line>
+            <v-list-item v-for="n in 3" :key="n" link>
+              <v-list-item-avatar>
+                <v-icon large color="primary">mdi-account-circle</v-icon>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title class="text-capitalize"
+                  >abraham lincoln</v-list-item-title
+                >
+                <v-list-item-subtitle>
+                  This is a very nice file
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn icon color="red darken-2">
+                  22 <v-icon>mdi-heart</v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-text-field
+            dense
+            prepend-inner-icon="mdi-message"
+            append-icon="mdi-send"
+            label="Enter your comment here"
+            outlined
+          ></v-text-field>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import { mapState, mapActions } from "pinia";
+import { myDocuments } from "@/stores/myDocuments";
+
 export default {
   name: "OutForApproval",
   data: () => ({
@@ -195,8 +299,23 @@ export default {
         file: "New Document.docx",
       },
     ],
+    newApprovalDialog: false,
+    commentsDialog: false,
+    // form
+    form: false,
+    rules: {
+      required: (v) => !!v || "Required",
+    },
+    recipientType: "",
+    recipient: "",
+    file: "",
+    sendLoader: false,
   }),
+  computed: {
+    ...mapState(myDocuments, ["outForApproval"]),
+  },
   methods: {
+    ...mapActions(myDocuments, ["getApprovals"]),
     getFileIcon(fileName) {
       let fileExtension = [];
       let start = false;
@@ -245,6 +364,10 @@ export default {
           return "primary";
       }
     },
+    sendApproval() {},
+  },
+  created() {
+    // this.getApprovals();
   },
 };
 </script>

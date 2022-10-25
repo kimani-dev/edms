@@ -57,6 +57,7 @@ export const myDocuments = defineStore("mydocuments", {
     outgoingDocuments: [],
     outForApproval: [],
     inForApproval: [],
+    cabinet: [],
   }),
   getters: {
     incomingDocumentsCount: (state) => {
@@ -77,6 +78,7 @@ export const myDocuments = defineStore("mydocuments", {
     getIncomingDocuments() {},
     getOutgoingDocuments() {},
     getApprovals() {},
+    getCabinet() {},
     // get all documents pertaining a user
     getAllDocuments() {
       this.getMyDocuments();
