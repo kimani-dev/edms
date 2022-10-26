@@ -33,8 +33,12 @@
               >
             </template>
             <v-card class="mx-auto" width="500">
-              <v-card-title>
-                <p class="mx-auto text-uppercase">create chat room</p>
+              <v-card-title class="text-uppercase">
+                create chat room
+                <v-spacer></v-spacer>
+                <v-btn color="primary" icon @click="addDialog = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
               </v-card-title>
               <v-card-text>
                 <v-form v-model="addForm" ref="addForm">
@@ -61,6 +65,7 @@
                   <v-btn
                     color="primary"
                     block
+                    outlined
                     :disabled="!addForm"
                     :loading="addLoader"
                     @click="createRoom"
@@ -106,8 +111,12 @@
         <!-- edit dialog -->
         <v-dialog v-model="editDialog" width="auto">
           <v-card class="mx-auto" width="500">
-            <v-card-title>
-              <p class="text-uppercase mx-auto">edit chat room</p>
+            <v-card-title class="text-uppercase">
+              edit chat room
+              <v-spacer></v-spacer>
+              <v-btn color="primary" icon @click="editDialog = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
             </v-card-title>
             <v-card-text>
               <v-form v-model="editForm" ref="editForm">
@@ -122,6 +131,7 @@
                 <v-btn
                   color="primary"
                   block
+                  outlined
                   :disabled="!editForm"
                   :loading="editLoader"
                   @click="editRoom"
@@ -135,8 +145,12 @@
         <!-- delete dialog -->
         <v-dialog v-model="deleteDialog" width="auto">
           <v-card width="500" class="mx-auto">
-            <v-card-title>
-              <p class="text-uppercase mx-auto">delete chat room</p>
+            <v-card-title class="text-uppercase">
+              delete chat room
+              <v-spacer></v-spacer>
+              <v-btn icon color="primary" @click="deleteDialog = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
             </v-card-title>
             <v-card-text>
               <p class="black--text">
@@ -144,11 +158,15 @@
               </p>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="deleteDialog = false"
+              <v-btn color="primary" outlined @click="deleteDialog = false"
                 >cancel</v-btn
               >
               <v-spacer></v-spacer>
-              <v-btn color="error" @click="deleteRoom" :loading="deleteLoader"
+              <v-btn
+                color="error"
+                outlined
+                @click="deleteRoom"
+                :loading="deleteLoader"
                 >delete</v-btn
               >
             </v-card-actions>
